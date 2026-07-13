@@ -1,11 +1,6 @@
 from fastapi import APIRouter
+from app.api.v1 import router as v1_router
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
-@router.get("/")
-def read_root():
-    return {"message": "Welcome to Atlas"}
-
-@router.get("/health")
-def health_check():
-    return {"status": "healthy"}
+router.include_router(v1_router)
