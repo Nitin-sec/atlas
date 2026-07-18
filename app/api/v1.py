@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.core.config import APP_NAME, APP_VERSION
+from app.core.database import check_database_connection
 
 router = APIRouter()
 
@@ -20,4 +21,16 @@ def get_info():
         "name": APP_NAME,
         "version": APP_VERSION,
         "status": "healthy",
+    }
+
+@router.get("/db-health")
+def database_health():
+
+    if check_database_connection():
+        return {
+            "database": "connected"
+        }
+    
+    return {
+        "database": "disconnected"
     }
