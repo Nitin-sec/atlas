@@ -5,7 +5,7 @@ All database interactions should use this shared engine.
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
-
+from app.models.note import Base
 from app.core.config import DATABASE_URL
 
 engine = create_engine(DATABASE_URL)
@@ -24,3 +24,6 @@ def check_database_connection() -> bool:
 
     except SQLAlchemyError:
         return False
+    
+def create_tables():
+    Base.metadata.create_all(bind=engine)
