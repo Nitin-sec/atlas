@@ -12,3 +12,7 @@ class NoteResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class NoteUpdate(BaseModel):
+    title: str
+    content: str

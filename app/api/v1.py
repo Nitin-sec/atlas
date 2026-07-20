@@ -9,6 +9,8 @@ from fastapi import HTTPException
 from app.core.database import get_db
 from app.schemas.note import NoteCreate, NoteResponse
 from app.crud.note import create_note
+from app.schemas.note import NoteUpdate
+from app.crud.note import update_note
 
 router = APIRouter()
 
@@ -71,6 +73,26 @@ def read_note(
     db: Session = Depends(get_db),
 ):
     note = get_note(db, note_id)
+
+    if note is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Note not found",
+        )
+
+    return note
+
+@router.put(
+    "/notes/{note_id}",
+    response_model=NoteResponse,
+)
+def update_existing_note(
+    note_id: int,
+    updated_note: NoteUpdate,
+    db: Session = Depends(get_db),
+):
+
+    note = update_note(db, note_id, updated_note)
 
     if note is None:
         raise HTTPException(

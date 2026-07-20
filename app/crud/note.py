@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.note import Note
 from app.schemas.note import NoteCreate
 from typing import List
+from app.schemas.note import NoteUpdate
 
 def create_note(db: Session, note: NoteCreate) -> Note:
     db_note = Note(
@@ -24,3 +25,22 @@ def get_note(db: Session, note_id: int) -> Note | None:
         .filter(Note.id == note_id)
         .first()
     )
+
+def update_note(
+        db: Session,
+        note_id: int,
+        updated_note: NoteUpdate,
+) -> Note | None:
+    
+    note = db.query(Note).filter(Note.id == note_id).first()
+
+    if note is None:
+        return None
+    
+    note.title = updated_note.title
+    note.content = updated_note.content
+
+    db. commit()
+    db.refresh(note)
+
+    return note
