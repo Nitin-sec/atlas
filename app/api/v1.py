@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.core.config import APP_NAME, APP_VERSION
 from app.core.database import check_database_connection
 from fastapi import Depends
-
+from app.crud.note import get_notes
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -51,3 +51,12 @@ def create_new_note(
     db: Session = Depends(get_db),
 ):
     return create_note(db, note)
+
+@router.get(
+    "/notes",
+    response_model=list[NoteResponse],
+)
+def read_notes(
+    db: Session = Depends(get_db),
+):
+    return get_notes(db)
