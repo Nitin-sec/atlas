@@ -1,6 +1,13 @@
 from fastapi import APIRouter
 from app.core.config import APP_NAME, APP_VERSION
 from app.core.database import check_database_connection
+from fastapi import Depends
+
+from sqlalchemy.orm import Session
+
+from app.core.database import get_db
+from app.schemas.note import NoteCreate, NoteResponse
+from app.crud.note import create_note
 
 router = APIRouter()
 
@@ -34,3 +41,13 @@ def database_health():
     return {
         "database": "disconnected"
     }
+
+@router.post(
+    "/notes",
+    response_model=NoteResponse,
+)
+def create_new_note(
+    note: NoteCreate,
+    db: Session = Depends(get_db),
+):
+    return create_note(db, note)
