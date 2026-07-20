@@ -17,3 +17,10 @@ def create_note(db: Session, note: NoteCreate) -> Note:
 
 def get_notes(db: Session) -> List[Note]:
     return db.query(Note).all()
+
+def get_note(db: Session, note_id: int) -> Note | None:
+    return (
+        db.query(Note)
+        .filter(Note.id == note_id)
+        .first()
+    )

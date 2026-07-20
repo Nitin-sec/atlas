@@ -4,7 +4,8 @@ from app.core.database import check_database_connection
 from fastapi import Depends
 from app.crud.note import get_notes
 from sqlalchemy.orm import Session
-
+from app.crud.note import get_note
+from fastapi import HTTPException
 from app.core.database import get_db
 from app.schemas.note import NoteCreate, NoteResponse
 from app.crud.note import create_note
@@ -60,3 +61,21 @@ def read_notes(
     db: Session = Depends(get_db),
 ):
     return get_notes(db)
+
+@router.get(
+    "/notes/{note_id}",
+    response_model=NoteResponse,
+)
+def read_note(
+    note_id: int,
+    db: Session = Depends(get_db),
+):
+    note = get_note(db, note_id)
+
+    if note is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Note not found",
+        )
+
+    return note
