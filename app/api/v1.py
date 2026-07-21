@@ -11,6 +11,7 @@ from app.schemas.note import NoteCreate, NoteResponse
 from app.crud.note import create_note
 from app.schemas.note import NoteUpdate
 from app.crud.note import update_note
+from app.crud.note import delete_note
 
 router = APIRouter()
 
@@ -101,3 +102,20 @@ def update_existing_note(
         )
 
     return note
+
+@router.delete("/notes/{note_id}")
+def delete_existing_note(
+    note_id: int,
+    db: Session = Depends(get_db),
+):
+    deleted = delete_note(db, note_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Note not found",
+        )
+
+    return {
+        "message": "Note deleted successfully"
+    }

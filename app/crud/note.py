@@ -44,3 +44,14 @@ def update_note(
     db.refresh(note)
 
     return note
+
+def delete_note(db: Session, note_id: int) -> bool:
+    note = db.query(Note).filter(Note.id == note_id).first()
+
+    if note is None:
+        return False
+    
+    db.delete(note)
+    db.commit()
+
+    return True
