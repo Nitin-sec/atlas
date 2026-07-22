@@ -1,17 +1,22 @@
-from fastapi import APIRouter
-from app.core.config import APP_NAME, APP_VERSION
-from app.core.database import check_database_connection
-from fastapi import Depends
-from app.crud.note import get_notes
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.crud.note import get_note
-from fastapi import HTTPException
-from app.core.database import get_db
-from app.schemas.note import NoteCreate, NoteResponse
-from app.crud.note import create_note
-from app.schemas.note import NoteUpdate
-from app.crud.note import update_note
-from app.crud.note import delete_note
+
+from app.core.config import APP_NAME, APP_VERSION
+from app.core.database import check_database_connection, get_db
+
+from app.crud.note import (
+    create_note,
+    delete_note,
+    get_note,
+    get_notes,
+    update_note,
+)
+
+from app.schemas.note import (
+    NoteCreate,
+    NoteResponse,
+    NoteUpdate,
+)
 
 router = APIRouter()
 
@@ -34,21 +39,19 @@ def get_info():
         "status": "healthy",
     }
 
+
 @router.get("/db-health")
 def database_health():
-
     if check_database_connection():
-        return {
-            "database": "connected"
-        }
-    
-    return {
-        "database": "disconnected"
-    }
+        return {"database": "connected"}
+
+    return {"database": "disconnected"}
+
 
 @router.post(
     "/notes",
     response_model=NoteResponse,
+    tags=["Notes"],
 )
 def create_new_note(
     note: NoteCreate,
@@ -56,18 +59,22 @@ def create_new_note(
 ):
     return create_note(db, note)
 
+
 @router.get(
     "/notes",
     response_model=list[NoteResponse],
+    tags=["Notes"],
 )
 def read_notes(
     db: Session = Depends(get_db),
 ):
     return get_notes(db)
 
+
 @router.get(
     "/notes/{note_id}",
     response_model=NoteResponse,
+    tags=["Notes"],
 )
 def read_note(
     note_id: int,
@@ -83,16 +90,17 @@ def read_note(
 
     return note
 
+
 @router.put(
     "/notes/{note_id}",
     response_model=NoteResponse,
+    tags=["Notes"],
 )
 def update_existing_note(
     note_id: int,
     updated_note: NoteUpdate,
     db: Session = Depends(get_db),
 ):
-
     note = update_note(db, note_id, updated_note)
 
     if note is None:
@@ -103,7 +111,11 @@ def update_existing_note(
 
     return note
 
-@router.delete("/notes/{note_id}")
+
+@router.delete(
+    "/notes/{note_id}",
+    tags=["Notes"],
+)
 def delete_existing_note(
     note_id: int,
     db: Session = Depends(get_db),

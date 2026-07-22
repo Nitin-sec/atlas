@@ -12,6 +12,12 @@ app = FastAPI(
     title=APP_NAME,
     description=APP_DESCRIPTION,
     version=APP_VERSION,
+    openapi_tags=[
+        {
+            "name": "Notes",
+            "description": "CRUD operations for Atlas notes.",
+        }
+    ],
 )
 
 app.include_router(router)
