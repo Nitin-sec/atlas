@@ -22,7 +22,3 @@ app = FastAPI(
 
 app.include_router(router)
 
-@app.on_event("startup")
-def startup():
-
-    create_tables()
