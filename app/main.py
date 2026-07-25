@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 
 from app.api.routes import router
-from app.core.database import engine
 from app.core.config import (
     APP_DESCRIPTION,
     APP_NAME,
@@ -16,9 +15,12 @@ app = FastAPI(
         {
             "name": "Notes",
             "description": "CRUD operations for Atlas notes.",
-        }
+        },
+        {
+            "name": "Users",
+            "description": "User registration and authentication.",
+        },
     ],
 )
 
 app.include_router(router)
-
