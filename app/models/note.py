@@ -1,15 +1,20 @@
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
-class Base(DeclarativeBase):
-    pass
+from app.models import Base
+
 
 class Note(Base):
     __tablename__ = "notes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    title: Mapped[str]
+    title: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+    )
 
-    content: Mapped[str]
+    content: Mapped[str] = mapped_column(
+        String,
+        nullable=False,
+    )
