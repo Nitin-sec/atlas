@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.core.database import create_tables
+
 from app.api.routes import router
 from app.core.database import engine
 from app.core.config import (
