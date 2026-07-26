@@ -4,6 +4,22 @@ from sqlalchemy.orm import Session
 from app.core.config import APP_NAME, APP_VERSION
 from app.core.database import check_database_connection, get_db
 
+from app.schemas.user import (
+    UserCreate,
+    UserResponse,
+    UserLogin,
+    Token,
+)
+
+from app.crud.user import (
+    create_user,
+    get_user_by_email,
+    get_user_by_username,
+    authenticate_user,
+)
+
+from app.security.jwt import create_access_token
+
 from app.schemas.user import UserCreate, UserResponse
 from app.crud.user import(
     create_user,
@@ -161,3 +177,35 @@ def register_user(
         )
 
     return create_user(db, user)
+
+@router.post(
+    "/users/login",
+    response_model=Token,
+    tags=["Users"],
+)
+def login(
+    credentials: UserLogin,
+    db: Session = Depends(get_db),
+):
+    user = authenticate_user(
+        db,
+        credentials.username,
+        credentials.password,
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password",
+        )
+
+    access_token = create_access_token(
+        {
+            "sub": user.username,
+        }
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
