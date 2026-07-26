@@ -40,5 +40,3 @@ def check_database_connection() -> bool:
     except SQLAlchemyError:
         return False
     
-def create_tables():
-    Base.metadata.create_all(bind=engine)
