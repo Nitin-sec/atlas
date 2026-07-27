@@ -8,6 +8,9 @@ from app.models.user import User
 from app.core.config import APP_NAME, APP_VERSION
 from app.core.database import check_database_connection, get_db
 
+from app.security.dependencies import get_current_user
+from app.models.user import User
+
 from app.schemas.user import (
     UserCreate,
     UserResponse,
@@ -66,10 +69,7 @@ def database_health():
 
     return {"database": "disconnected"}
 
-
-# ------------------------
 # Notes
-# ------------------------
 
 @router.post(
     "/notes",
@@ -78,9 +78,14 @@ def database_health():
 )
 def create_new_note(
     note: NoteCreate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return create_note(db, note)
+    return create_note(
+        db,
+        note,
+        current_user,
+    )
 
 
 @router.get(
@@ -89,9 +94,13 @@ def create_new_note(
     tags=["Notes"],
 )
 def read_notes(
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return get_notes(db)
+    return get_notes(
+        db,
+        current_user,
+    )
 
 
 @router.get(
@@ -101,9 +110,14 @@ def read_notes(
 )
 def read_note(
     note_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    note = get_note(db, note_id)
+    note = get_note(
+        db,
+        note_id,
+        current_user,
+    )
 
     if note is None:
         raise HTTPException(
@@ -122,9 +136,15 @@ def read_note(
 def update_existing_note(
     note_id: int,
     updated_note: NoteUpdate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    note = update_note(db, note_id, updated_note)
+    note = update_note(
+        db,
+        note_id,
+        updated_note,
+        current_user,
+    )
 
     if note is None:
         raise HTTPException(
