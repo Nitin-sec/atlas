@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.core.config import APP_NAME, APP_VERSION
@@ -7,8 +8,13 @@ from app.core.database import check_database_connection, get_db
 from app.schemas.user import (
     UserCreate,
     UserResponse,
-    UserLogin,
     Token,
+)
+
+from app.schemas.note import (
+    NoteCreate,
+    NoteResponse,
+    NoteUpdate,
 )
 
 from app.crud.user import (
@@ -16,15 +22,6 @@ from app.crud.user import (
     get_user_by_email,
     get_user_by_username,
     authenticate_user,
-)
-
-from app.security.jwt import create_access_token
-
-from app.schemas.user import UserCreate, UserResponse
-from app.crud.user import(
-    create_user,
-    get_user_by_email,
-    get_user_by_username,
 )
 
 from app.crud.note import (
@@ -35,11 +32,7 @@ from app.crud.note import (
     update_note,
 )
 
-from app.schemas.note import (
-    NoteCreate,
-    NoteResponse,
-    NoteUpdate,
-)
+from app.security.jwt import create_access_token
 
 router = APIRouter()
 
@@ -70,6 +63,10 @@ def database_health():
 
     return {"database": "disconnected"}
 
+
+# ------------------------
+# Notes
+# ------------------------
 
 @router.post(
     "/notes",
@@ -155,6 +152,11 @@ def delete_existing_note(
         "message": "Note deleted successfully"
     }
 
+
+# ------------------------
+# Users
+# ------------------------
+
 @router.post(
     "/users/register",
     response_model=UserResponse,
@@ -178,19 +180,20 @@ def register_user(
 
     return create_user(db, user)
 
+
 @router.post(
     "/users/login",
     response_model=Token,
     tags=["Users"],
 )
 def login(
-    credentials: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
     user = authenticate_user(
         db,
-        credentials.username,
-        credentials.password,
+        form_data.username,
+        form_data.password,
     )
 
     if not user:
