@@ -161,9 +161,14 @@ def update_existing_note(
 )
 def delete_existing_note(
     note_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    deleted = delete_note(db, note_id)
+    deleted = delete_note(
+        db,
+        note_id,
+        current_user,
+    )
 
     if not deleted:
         raise HTTPException(
@@ -175,10 +180,7 @@ def delete_existing_note(
         "message": "Note deleted successfully"
     }
 
-
-# ------------------------
 # Users
-# ------------------------
 
 @router.post(
     "/users/register",
