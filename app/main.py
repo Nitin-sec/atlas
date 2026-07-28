@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 
+from app.core.exceptions import register_exception_handlers
+
 from app.api.routes import router
 from app.core.config import (
     APP_DESCRIPTION,
@@ -22,5 +24,14 @@ app = FastAPI(
         },
     ],
 )
+
+app.include_router(router)
+
+app = FastAPI(
+    title="Atlas API",
+    version="0.1.0",
+)
+
+register_exception_handlers(app)
 
 app.include_router(router)
