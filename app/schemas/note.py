@@ -1,24 +1,22 @@
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
 TitleField = Annotated[
     str,
-    Field(
+    StringConstraints(
         min_length=3,
         max_length=100,
         strip_whitespace=True,
-        description="Title of the note",
     ),
 ]
 
 ContentField = Annotated[
-    str, 
-    Field(
+    str,
+    StringConstraints(
         min_length=5,
         max_length=5000,
         strip_whitespace=True,
-        description="Content of the note",
     ),
 ]
 
