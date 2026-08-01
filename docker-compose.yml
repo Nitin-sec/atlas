@@ -14,13 +14,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d atlas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   api:
     build: .
 
     container_name: atlas-api
 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
     ports:
       - "8000:8000"
