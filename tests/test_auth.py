@@ -1,52 +1,21 @@
-from .conftest import client
-import uuid
+from .conftest import (
+    client,
+    register_user,
+    login_user,
+)
 
 
 def test_login_success():
-    unique = uuid.uuid4().hex[:8]
+    payload = register_user(client)
 
-    payload = {
-        "username": f"user_{unique}",
-        "email": f"{unique}@example.com",
-        "password": "StrongPassword123",
-    }
+    token = login_user(client, payload)
 
-    register_response = client.post(
-        "/api/v1/users/register",
-        json=payload,
-    )
-
-    assert register_response.status_code == 200
-
-    login_response = client.post(
-        "/api/v1/users/login",
-        data={
-            "username": payload["username"],
-            "password": payload["password"],
-        },
-    )
-
-    assert login_response.status_code == 200
-
-    token = login_response.json()
-
-    assert "access_token" in token
-    assert token["token_type"] == "bearer"
+    assert token is not None
+    assert isinstance(token, str)
 
 
 def test_login_invalid_password():
-    unique = uuid.uuid4().hex[:8]
-
-    payload = {
-        "username": f"user_{unique}",
-        "email": f"{unique}@example.com",
-        "password": "StrongPassword123",
-    }
-
-    client.post(
-        "/api/v1/users/register",
-        json=payload,
-    )
+    payload = register_user(client)
 
     response = client.post(
         "/api/v1/users/login",

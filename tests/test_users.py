@@ -1,19 +1,12 @@
-from .conftest import client
-import uuid
+from .conftest import client, create_user_payload
 
 
 def test_create_user():
-    unique = uuid.uuid4().hex[:8]
-
-    payload = {
-        "username": f"user_{unique}",
-        "email": f"{unique}@example.com",
-        "password": "StrongPassword123"
-    }
+    payload = create_user_payload()
 
     response = client.post(
         "/api/v1/users/register",
-        json=payload
+        json=payload,
     )
 
     assert response.status_code == 200
